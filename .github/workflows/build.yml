@@ -1,0 +1,46 @@
+name: Build and upload recipes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Pixi
+        uses: prefix-dev/setup-pixi@v0.10.2
+        with:
+          run-install: false
+
+      # Builds (and tests) every recipe whose version and build number are not
+      # already on the channel, in dependency order.
+      - name: Build new recipe versions
+        run: |
+          pixi exec --spec "rattler-build==0.77.0" -- rattler-build build \
+            --recipe-dir recipes \
+            --output-dir output \
+            --channel conda-forge \
+            --channel https://prefix.dev/akhanf/khanlab \
+            --skip-existing all \
+            --log-style plain
+
+      - name: Upload to akhanf/khanlab
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          packages=(output/noarch/*.conda output/linux-64/*.conda)
+          if [ ${#packages[@]} -eq 0 ]; then
+            echo "No new packages to upload"
+            exit 0
+          fi
+          pixi upload prefix --channel akhanf/khanlab "${packages[@]}"
