@@ -1,0 +1,40 @@
+context:
+  name: dynamic-network-architectures
+  version: "0.4.4"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/d/dynamic-network-architectures/dynamic_network_architectures-${{ version }}.tar.gz
+  sha256: 5aee8856a255b658ef4f3b1ffa1276884bb5585cb38ff9c816403b1d905afa94
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.9
+    - setuptools >=61.0
+    - pip
+  run:
+    - python >=3.9
+    - pytorch >=1.6.0
+    - numpy
+    - timm <1.0.23
+    - einops
+
+tests:
+  - python:
+      imports:
+        - dynamic_network_architectures
+      pip_check: true
+
+about:
+  homepage: https://github.com/MIC-DKFZ/dynamic-network-architectures
+  summary: Network architectures used by nnU-Net
+  license: Apache-2.0
+  license_file: LICENSE

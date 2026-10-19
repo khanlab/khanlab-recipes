@@ -1,0 +1,50 @@
+context:
+  name: ngff-zarr
+  version: "0.34.0"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/n/ngff-zarr/ngff_zarr-${{ version }}.tar.gz
+  sha256: cc8a5fcb731e6ce70eabc3112d6502127d7e0e5b532608bc7574f1daaefe019c
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  python:
+    entry_points:
+      - ngff-zarr = ngff_zarr.cli:main
+
+requirements:
+  host:
+    - python >=3.11
+    - hatchling
+    - pip
+  run:
+    - python >=3.11
+    # dask releases excluded upstream
+    - dask >=2025.1.0,!=2025.12.0,!=2026.1.0,!=2026.1.1
+    - importlib_resources
+    - itkwasm-downsample >=1.8.0
+    - itkwasm >=1.0b183
+    - numpy
+    - platformdirs
+    - psutil
+    - rich
+    - rich-argparse
+    - typing_extensions
+    - zarr
+
+tests:
+  - python:
+      imports:
+        - ngff_zarr
+      pip_check: true
+
+about:
+  homepage: https://github.com/thewtex/ngff-zarr
+  summary: A lean and kind Open Microscopy Environment (OME) Next Generation File Format (NGFF) Zarr implementation
+  license: MIT

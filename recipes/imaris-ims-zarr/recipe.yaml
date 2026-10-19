@@ -1,0 +1,43 @@
+context:
+  name: imaris-ims-zarr
+  version: "0.2.0"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/i/imaris-ims-zarr/imaris_ims_zarr-${{ version }}.tar.gz
+  sha256: ef9ed4093c461f602eca64952dec6d4e725513b23142bff13f4b1800fc6a9502
+
+build:
+  number: 0
+  noarch: python
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python >=3.11,<3.14
+    - hatchling
+    - hatch-vcs
+    - pip
+  run:
+    - python >=3.11,<3.14
+    - h5py >=3.5.0
+    - hdf5plugin
+    - numcodecs
+    - numpy
+    - scikit-image
+    - zarr >=3
+
+tests:
+  - python:
+      imports:
+        - imaris_ims_zarr
+      pip_check: true
+
+about:
+  homepage: https://pypi.org/project/imaris-ims-zarr/
+  summary: Zarr store for reading Imaris .ims files
+  license: BSD-3-Clause
+  license_file: LICENCE
